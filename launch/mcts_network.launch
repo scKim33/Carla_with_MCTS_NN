@@ -1,0 +1,10 @@
+<launch>
+ <!-- nodes -->
+ <node pkg="velodyne_height_map" type="heightmap_node" name="heightmap_node" output="screen"/>
+ <node pkg="rviz" type="rviz" name="rviz" args="-d $(find mcts_network)/rviz/rviz.rviz"/>
+ <node pkg="mcts_network" type="mcts_network" name="mcts_network" output="screen"/>
+
+ <!-- parameters -->
+ <rosparam command="load" file="$(find mcts_network)/config/config.yaml" />
+
+</launch>

@@ -1,0 +1,8 @@
+<launch>
+ <!-- nodes -->
+ <node pkg="mcts_network" type="test_Phi" name="test_Phi" output="screen"/>
+
+ <!-- parameters -->
+ <rosparam command="load" file="$(find mcts_network)/config/config.yaml" />
+
+</launch>

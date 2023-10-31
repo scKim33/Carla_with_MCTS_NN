@@ -1,0 +1,56 @@
+## DEBUG parameters  
+  DEBUG_MCTS: false
+  DEBUG_Train: true 
+  DEBUG_Main: true
+
+## MCTS parameters
+  c1: 1.25 # parameter of PUCT
+  c2: 19652
+  angle_weight: 0.164  # parameter of reward function, reward weight between angle and euclidian
+  MAX_DEPTH: 5 # maximum depth of MCTS Tree 
+  MAX_ITER: 100000 # maximum backups of MCTS Tree
+  MAX_TIME: 0.04 # MCTS process terminate within max time
+  dt: 1.0 # time steps interval between nodes
+  gamma: 0.9 # n-step reward decay
+
+
+## NN parameters
+
+  # dim
+  action_space: 9 
+  observation_space: 105
+
+  # net
+  base_hidden_state_1: 100
+  base_hidden_state_2: 100
+  base_output: 100
+  policy_hidden_state_1: 100
+  policy_hidden_state_2: 100
+  value_hidden_state_1: 100
+  value_hidden_state_2: 100
+
+  # train
+  lr: 0.005
+  policy_loss_weight: 1.0
+  value_loss_weight: 100.0
+  train_interval: 1
+  l2_regularize_coefficent: 0.1
+  batch_size: 256
+  uniform_policy_weight: 0.3
+
+  # reward
+  angle_reward_weight: 1.0
+  terminal_reward_decay: 0.97
+
+  # device
+  enable_gpu: false
+  
+  # save and load
+  load_model: true
+  load_dir: "/home/dyros-mk/catkin_ws/src/mcts_network/save/model_b.pt"
+  save_dir: "/home/dyros-mk/catkin_ws/src/mcts_network/save/model_b.pt"
+  save_interval: 1000
+
+
+## Main parameters
+

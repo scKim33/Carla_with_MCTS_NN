@@ -1,0 +1,8 @@
+<launch>
+ <!-- nodes -->
+ <node pkg="mcts_network" type="test_tensor_basics" name="test_tensor_basics" output="screen"/>
+
+ <!-- parameters -->
+ <rosparam command="load" file="$(find mcts_network)/config/config.yaml" />
+
+</launch>
