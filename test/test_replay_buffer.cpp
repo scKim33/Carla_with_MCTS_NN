@@ -5,7 +5,7 @@
 
 #include "../include/data_types.h"
 #include "../include/replay_buffer.h"
-
+#include "../include/config.h"
 
 using namespace std;
 

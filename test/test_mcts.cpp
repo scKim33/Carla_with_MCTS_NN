@@ -7,6 +7,7 @@
 #include "../include/data_types.h"
 #include "../include/replay_buffer.h"
 #include "../include/mcts.h"
+#include "../include/config.h"
 
 
 using namespace std;
@@ -22,8 +23,12 @@ int main() {
     torch::Device device(torch::cuda::is_available() ? torch::kCUDA : torch::kCPU);
     cout << "Device : " << device << endl;
 
-    PVNet pv(65, 100, 100, 100, 100, 100, 100, 100, 100, 100);
-    pv->to(torch::kCPU);
+    Config config = _getParam(nh_);
+    torch:: TensorOptions options = torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCPU);
+    device = torch::kCPU;
+
+    PVNet pv(config);
+    pv->to(device);
 
     // vector<Coordinate> obstacles;
     vector<float> obstacles;
@@ -39,18 +44,18 @@ int main() {
     goal.x = 2.0;
     goal.y = 3.0;
     goal.th = 50 * DEG2RAD;
-    // for(int i = 0; i < 20; i++) {
-    //     Coordinate obs{1.0  + 1.0 * i, 2.0 + 2.0 * i, 3.0 + 3.0 * i};
-    //     obstacles.push_back(obs);
-    // }
+    for(int i = 0; i < 100; i++) {
+        obstacles.push_back(i);
+    }
 
     // Sub_ObstaclePoses = nh_.subscribe("/obs_poses", 1, &Callback_ObstaclePoses);
     // Sub_GoalPosition = nh_.subscribe("/parking_cands", 1, &Callback_Goal);
     nav_msgs::Path mcts_path;
     vector<float> policy;
-    MCTS mcts_agent(nh_, state, goal, obstacles, pv);
-    tie(state.s, state.v, policy, mcts_path) = mcts_agent.main();
-    
+    int backup_count;
+    MCTS mcts_agent(config, nh_, state, goal, obstacles, pv, options);
+    tie(state.s, state.v, policy, mcts_path, backup_count) = mcts_agent.main();
+    cout << state.s << ", " << state.v << "\n" << policy << "\n";
     // Pub_MctsPath.publish(mcts_path);
 
     return 0;

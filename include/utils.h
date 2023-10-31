@@ -31,6 +31,9 @@
 #include "data_types.h"
 
 
+using namespace std;
+
+
 Config _getParam(ros::NodeHandle nh_);
 
 vector<float> get_observation(State s, Coordinate g, vector<float> obs);

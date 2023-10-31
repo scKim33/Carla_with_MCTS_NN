@@ -117,14 +117,15 @@ tuple<double, double, vector<float>, nav_msgs::Path, int> MCTS::main() {
     msg.data.push_back(v * MPS2KMPH); // deg, km/h
     PubAction.publish(msg);
 
-    if(DEBUG) {
-        cout.precision(4);
-        cout << "Control Command { Steer : " << msg.data[0] << "[deg] , Velocity : " << msg.data[1] << "[km/h] }\n"
-        << "Calc time(ms) : " << (ros::Time::now() - time_flag).toSec() * 1000
-        << ", # backups : " << backup_count
-        << ", # nodes generated : " << global_idx << "\n\n";
+    double x_, y_, th_;
+    tie(x_, y_, th_) = localization(node_list [0].current_state.pos, goal);
+    cout << "Root info - x : " << x_ << ", y : " << y_ << ", th : " << th_ * RAD2DEG << "\n";
+    cout.precision(4);
+    cout << "Control Command { Steer : " << s * RAD2DEG << "[deg] , Velocity : " << v * MPS2KMPH << "[km/h] }\n"
+    << "Calc time(ms) : " << (ros::Time::now() - time_flag).toSec() * 1000
+    << ", # backups : " << backup_count
+    << ", # nodes generated : " << global_idx << "\n\n";
 
-    }
 
     vector<float> pi;
     for(int i = 0; i < config.action_space; i++) {
@@ -255,7 +256,7 @@ NODE MCTS::Move(NODE* node, double ds, double dv) { // give an action as input a
     double new_s = node->current_state.s + ds;
     double param = inv_Phi(node->current_state.v) + dv;
     double new_v = Phi(param);
-    assert(abs(new_v) >= 0.8 || abs(new_v) == 0);
+    // assert(abs(new_v) >= 0.8 * KMPH2MPS);
 
     // Physical constraint of the car
     if(new_s * RAD2DEG > MAX_S) {
@@ -307,7 +308,7 @@ NODE* MCTS::print_child_info(NODE* node) {
 
     for(int i = 0; i < node->children.size(); i++) {
         cout.precision(2);
-        cout << "Node index: " << node->node_idx
+        cout << "Node index: " << node->children[i]->node_idx
         << ", dv : " << setw(2) << vel_cand[get<1>(node->children[i]->last_action_idx)] * MPS2KMPH << "[km/h]"
         << ", ds : " << setw(3) << steer_cand[get<0>(node->children[i]->last_action_idx)] * RAD2DEG << "[deg]";
         cout.precision(5);
@@ -336,7 +337,7 @@ void MCTS::add_mcts_path(NODE* node) {
 
 PVNetInput MCTS::get_network_input(NODE* node) {
     double x, y, th;
-    {x, y, th} = localization(node->current_state.pos, goal);
+    tie(x, y, th) = localization(node->current_state.pos, goal);
     double s = node->current_state.s;
     double v = node->current_state.v;
     torch::Tensor car_state_normalized = torch::tensor({(float)((x + 30.0) / 60.0),
@@ -349,7 +350,7 @@ PVNetInput MCTS::get_network_input(NODE* node) {
     for(int i = 0; i < obstacles.size(); i += 5) {
         double x_, y_, th_;
         Coordinate obs_pose({obstacles[i], obstacles[i+1], obstacles[i+2]});
-        {x_, y_, th_} = localization(obs_pose, node->current_state.pos);
+        tie(x_, y_, th_) = localization(obs_pose, node->current_state.pos);
         temp[i] = (float)((x_ + 30.0) / 60.0);
         temp[i+1] = (float)((y_ + 30.0) / 60.0);
         temp[i+2] = (float)((th_ + M_PI) / (2 * M_PI));

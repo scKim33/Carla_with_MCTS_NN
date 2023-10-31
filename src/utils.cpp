@@ -1,7 +1,6 @@
 #include "../include/utils.h"
 
 
-
 Config _getParam(ros::NodeHandle nh_) {
     Config config;
 

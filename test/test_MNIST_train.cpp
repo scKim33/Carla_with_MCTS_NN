@@ -8,7 +8,6 @@
 
 
 int main() {
-    Config config = _getParam();
 
     std::cout << "Logistic Regression\n\n";
 
@@ -24,7 +23,7 @@ int main() {
     const size_t num_epochs = 10;
     const double learning_rate = 0.001;
 
-    const std::string MNIST_data_path = "/home/sckim/vscode/src/dataset";
+    const std::string MNIST_data_path = "/home/dyros-mk/catkin_ws/src/mcts_network/dataset";
 
     // MNIST Dataset (images and labels)
     auto train_dataset = torch::data::datasets::MNIST(MNIST_data_path)
@@ -51,7 +50,7 @@ int main() {
         std::move(test_dataset), batch_size);
 
     // Logistic regression model
-    Net net(input_size, num_classes);
+    torch::nn::Linear net(input_size, num_classes);
 
     net->to(device);
 
